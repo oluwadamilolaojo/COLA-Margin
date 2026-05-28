@@ -86,7 +86,6 @@ function SummaryTable({ rows, leverState, setLeverFor, salaries, config, target 
                 <td className="px-4 py-2.5 text-right font-mono text-ink/60">
                   {fp(bufPct)}
                 </td>
-                {/* COLA input */}
                 <td className="px-4 py-2.5">
                   <div className="flex items-center justify-center gap-1">
                     <input
@@ -99,7 +98,6 @@ function SummaryTable({ rows, leverState, setLeverFor, salaries, config, target 
                     <span className="text-ink/30 text-[9px]">%</span>
                   </div>
                 </td>
-                {/* TL toggle */}
                 <td className="px-4 py-2.5 text-center">
                   <button
                     onClick={() => upd('tlOn', !lever.tlOn)}
@@ -111,7 +109,6 @@ function SummaryTable({ rows, leverState, setLeverFor, salaries, config, target 
                     <span className={`inline-block h-3 w-3 rounded-full bg-card transition-transform ${lever.tlOn ? 'translate-x-3.5' : 'translate-x-0.5'}`} />
                   </button>
                 </td>
-                {/* Heads stepper */}
                 <td className="px-4 py-2.5">
                   <div className="flex items-center justify-center gap-1">
                     <button onClick={() => upd('headsToRemove', Math.max(0, lever.headsToRemove - STEP))}
@@ -123,7 +120,6 @@ function SummaryTable({ rows, leverState, setLeverFor, salaries, config, target 
                       className="w-5 h-5 border border-warm rounded text-ink/50 hover:bg-cream disabled:opacity-20 text-xs font-bold leading-none">+</button>
                   </div>
                 </td>
-                {/* Path C result */}
                 <td className="px-4 py-2.5 text-right">
                   <MarginBadge value={pathC.marginPct} target={target} size="sm" />
                 </td>
@@ -157,11 +153,8 @@ function AccountCard({ project, colaInfo, lever, setLever, salaries, config, exp
     setLever(solveForTarget(project, colaInfo.cap, salaries, config, target))
   }
 
-  const rec     = recommendation(baseline, target)
-  const margCls = marginColor(baseline.marginPct, target)
-  const margTextCls = { green: 'text-green-700', amber: 'text-amber-hugo', red: 'text-red-700' }
+  const rec = recommendation(baseline, target)
 
-  // Active lever indicators for collapsed row
   const activeLevers = [
     lever.colaApplied > 0 && `COLA ${lever.colaApplied.toFixed(2)}%`,
     lever.tlOn && 'TL ON',
@@ -173,7 +166,6 @@ function AccountCard({ project, colaInfo, lever, setLever, salaries, config, exp
       ${colaInfo.dnsy ? 'border-warm bg-amber-50/20' : 'border-warm bg-card'}
       ${expanded ? 'shadow-sm' : ''}`}>
 
-      {/* ── Collapsed row ── */}
       <div onClick={onToggle} className="px-5 py-3.5 flex items-center gap-4 cursor-pointer hover:bg-cream/60 transition-colors">
         <span className="text-ink/25 flex-shrink-0">
           {expanded ? <ChevronDown size={15} /> : <ChevronRight size={15} />}
@@ -207,16 +199,13 @@ function AccountCard({ project, colaInfo, lever, setLever, salaries, config, exp
         </div>
       </div>
 
-      {/* ── Expanded ── */}
       {expanded && (
         <div className="border-t border-warm">
 
-          {/* LEVERS */}
           <div className="px-5 pt-4 pb-3 bg-cream/30 border-b border-warm">
             <p className="text-[9px] uppercase tracking-widest text-ink/30 font-semibold mb-3">Levers</p>
             <div className="grid grid-cols-3 gap-6">
 
-              {/* COLA slider */}
               <div>
                 <div className="flex justify-between mb-1.5">
                   <span className="text-xs text-ink/50">COLA rate increase</span>
@@ -237,7 +226,6 @@ function AccountCard({ project, colaInfo, lever, setLever, salaries, config, exp
                 <p className="text-[9px] text-ink/25 mt-1">Active in Paths A and C</p>
               </div>
 
-              {/* TL toggle */}
               <div>
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-xs text-ink/50">Convert buffer → TL</span>
@@ -267,7 +255,6 @@ function AccountCard({ project, colaInfo, lever, setLever, salaries, config, exp
                 <p className="text-[9px] text-ink/25 mt-2">Active in Paths B and C</p>
               </div>
 
-              {/* Buffer stepper */}
               <div>
                 <div className="flex justify-between mb-1.5">
                   <span className="text-xs text-ink/50">Buffer reduction</span>
@@ -294,7 +281,6 @@ function AccountCard({ project, colaInfo, lever, setLever, salaries, config, exp
             </div>
           </div>
 
-          {/* OUTCOMES TABLE */}
           <div className="px-5 py-4">
             <p className="text-[9px] uppercase tracking-widest text-ink/30 font-semibold mb-3">Outcomes</p>
             <table className="w-full">
@@ -365,11 +351,10 @@ function AccountCard({ project, colaInfo, lever, setLever, salaries, config, exp
 export default function MarginPath({ projects, salaries, config }) {
   const TARGET = 0.85
 
-  const [leverState, setLeverState]     = usePersistedState('sp_margin_levers', {})
-  const [expanded,   setExpanded]       = usePersistedState('sp_margin_expanded', null)
-  const [showTable,  setShowTable]      = useState(false)
+  const [leverState, setLeverState] = usePersistedState('sp_margin_levers', {})
+  const [expanded,   setExpanded]   = usePersistedState('sp_margin_expanded', null)
+  const [showTable,  setShowTable]  = useState(false)
 
-  // Sort worst-margin first; use same sort for defaults + cards
   const sorted = useMemo(() => {
     return projects.map(p => {
       const ci = getCola(p.name)
@@ -378,7 +363,6 @@ export default function MarginPath({ projects, salaries, config }) {
     }).sort((a, b) => a.baseline.marginPct - b.baseline.marginPct)
   }, [projects, salaries, config])
 
-  // Default: top 5 worst expanded
   const defaultExpanded = useMemo(() => {
     const m = {}
     sorted.slice(0, 5).forEach(({ project }) => { m[project.id] = true })
@@ -388,13 +372,12 @@ export default function MarginPath({ projects, salaries, config }) {
   const expandedMap = expanded ?? defaultExpanded
 
   function toggleAcc(id) {
-    const cur  = expanded ?? defaultExpanded
+    const cur = expanded ?? defaultExpanded
     setExpanded({ ...cur, [id]: !cur[id] })
   }
   function getLever(id)       { return leverState[id] || DEFAULT_LEVER }
   function setLeverFor(id, l) { setLeverState({ ...leverState, [id]: l }) }
 
-  // Master controls
   const [mCola, setMCola] = useState(0)
   const [mTL,   setMTL]   = useState(false)
   const [mBuf,  setMBuf]  = useState(0)
@@ -428,7 +411,6 @@ export default function MarginPath({ projects, salaries, config }) {
     setExpanded(null)
   }
 
-  // Portfolio rollup (Path C)
   const rollup = useMemo(() => {
     let bRev = 0, bCost = 0, pRev = 0, pCost = 0, atTarget = 0
     sorted.forEach(({ project: p, colaInfo: ci, baseline: b }) => {
@@ -449,17 +431,16 @@ export default function MarginPath({ projects, salaries, config }) {
   }, [leverState, sorted, salaries, config])
 
   const rollupCells = [
-    { label: 'Baseline margin',    val: fp(rollup.baseMargin),               sub: 'Current run-rate',   accent: marginColor(rollup.baseMargin) === 'green' },
-    { label: 'Path C margin',      val: fp(rollup.pathMargin),               sub: `Δ ${(rollup.pathMargin - rollup.baseMargin >= 0 ? '+' : '')}${((rollup.pathMargin - rollup.baseMargin)*100).toFixed(1)}pp`, accent: true },
-    { label: 'Annual revenue lift', val: fm(rollup.revLift * 12),            sub: `+${fm(rollup.revLift)}/mo` },
-    { label: 'Accounts ≥85%',      val: `${rollup.atTarget} / ${rollup.total}`, sub: 'Under Path C' },
-    { label: 'DNSY flagged',        val: rollup.dnsy,                         sub: 'Excluded from COLA' },
+    { label: 'Baseline margin',     val: fp(rollup.baseMargin), sub: 'Current run-rate' },
+    { label: 'Path C margin',       val: fp(rollup.pathMargin), sub: `Δ ${(rollup.pathMargin - rollup.baseMargin >= 0 ? '+' : '')}${((rollup.pathMargin - rollup.baseMargin)*100).toFixed(1)}pp`, accent: true },
+    { label: 'Annual revenue lift', val: fm(rollup.revLift * 12), sub: `+${fm(rollup.revLift)}/mo` },
+    { label: 'Accounts ≥85%',       val: `${rollup.atTarget} / ${rollup.total}`, sub: 'Under Path C' },
+    { label: 'DNSY flagged',        val: rollup.dnsy, sub: 'Excluded from COLA' },
   ]
 
   return (
     <div className="space-y-4">
 
-      {/* Explainer */}
       <div className="bg-gold/10 border-l-4 border-gold rounded-r-lg px-4 py-3">
         <p className="text-sm text-ink">
           <strong>Three paths to 85% per account.</strong>{' '}
@@ -470,7 +451,6 @@ export default function MarginPath({ projects, salaries, config }) {
         </p>
       </div>
 
-      {/* Rollup */}
       <div className="grid grid-cols-5 gap-3">
         {rollupCells.map(c => (
           <div key={c.label} className="bg-card rounded-xl border border-warm p-4">
@@ -481,15 +461,14 @@ export default function MarginPath({ projects, salaries, config }) {
         ))}
       </div>
 
-      {/* Master controls */}
       <div className="bg-panel rounded-xl p-4 border border-panel-bd">
         <div className="flex items-center justify-between mb-3">
-          <p className="text-[10px] uppercase tracking-widest text-ink/40 font-semibold">Master controls</p>
+          <p className="text-[10px] uppercase tracking-widest text-card/50 font-semibold">Master controls</p>
           <div className="flex gap-2">
             <button onClick={solveAll} className="text-xs px-3 py-1.5 bg-gold hover:bg-gold-dark text-ink rounded font-semibold flex items-center gap-1 transition-colors">
               <Target size={11} /> Solve all to 85%
             </button>
-            <button onClick={resetAll} className="text-xs px-3 py-1.5 border border-panel-bd text-ink/50 hover:text-card hover:bg-ink/30 rounded transition-colors">
+            <button onClick={resetAll} className="text-xs px-3 py-1.5 border border-panel-bd text-card/50 hover:text-card hover:bg-ink/30 rounded transition-colors">
               Reset
             </button>
           </div>
@@ -497,7 +476,7 @@ export default function MarginPath({ projects, salaries, config }) {
         <div className="grid grid-cols-3 gap-5">
           <div>
             <div className="flex justify-between mb-1.5">
-              <span className="text-xs text-ink/40">Master COLA <span className="text-ink/25 text-[10px]">(applies up to each account's cap)</span></span>
+              <span className="text-xs text-card/70">Master COLA <span className="text-card/40 text-[10px]">(applies up to each account's cap)</span></span>
               <span className="text-sm font-semibold text-card font-mono">{mCola.toFixed(1)}%</span>
             </div>
             <input type="range" min="0" max="30" step="0.1" value={mCola}
@@ -506,7 +485,7 @@ export default function MarginPath({ projects, salaries, config }) {
           </div>
           <div>
             <div className="flex justify-between mb-2">
-              <span className="text-xs text-ink/40">Master TL toggle</span>
+              <span className="text-xs text-card/70">Master TL toggle</span>
               <span className="text-xs text-card font-mono">{mTL ? 'ON' : 'OFF'}</span>
             </div>
             <button onClick={() => { setMTL(!mTL); applyMaster(null, !mTL, null) }}
@@ -516,7 +495,7 @@ export default function MarginPath({ projects, salaries, config }) {
           </div>
           <div>
             <div className="flex justify-between mb-1.5">
-              <span className="text-xs text-ink/40">Master buffer reduction</span>
+              <span className="text-xs text-card/70">Master buffer reduction</span>
               <span className="text-sm font-semibold text-card font-mono">{mBuf}%</span>
             </div>
             <input type="range" min="0" max="100" step="1" value={mBuf}
@@ -526,7 +505,6 @@ export default function MarginPath({ projects, salaries, config }) {
         </div>
       </div>
 
-      {/* Summary table toggle */}
       <div className="flex items-center justify-between">
         <button onClick={() => setShowTable(v => !v)}
           className="flex items-center gap-2 text-xs text-ink/50 hover:text-ink border border-warm rounded-lg px-3 py-2 bg-card hover:bg-cream transition-colors">
@@ -552,7 +530,6 @@ export default function MarginPath({ projects, salaries, config }) {
         />
       )}
 
-      {/* Account cards */}
       <div>
         <p className="text-[10px] uppercase tracking-widest text-ink/30 font-semibold mb-3">
           Per-account paths · sorted worst margin first
